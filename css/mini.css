@@ -1,0 +1,29 @@
+body {
+  font-family: sans-serif;
+  background: #f0f0f0;
+  color: #222;
+  text-align: center;
+  padding: 20px;
+}
+
+.note {
+  display: inline-block;
+  margin: 2px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: #ccc;
+}
+
+.note.black {
+  background: #333;
+  color: white;
+}
+
+#piano-output {
+  background: white;
+  min-height: 60px;
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px dashed #aaa;
+  width: 80%;
+}
