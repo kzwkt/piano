@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Piano: Keyboard + Mouse</title>
+  <title>Advanced Piano</title>
   <style>
     body {
       text-align: center;
@@ -10,81 +10,110 @@
       background: #f5f5f5;
     }
 
-    .piano {
-      display: flex;
-      justify-content: center;
-      margin-top: 50px;
+    .piano-wrapper {
+      position: relative;
+      width: fit-content;
+      margin: auto;
+      margin-top: 40px;
     }
 
-    .key {
-      width: 60px;
-      height: 200px;
-      margin: 2px;
-      background: white;
-      border: 2px solid black;
+    .white-key, .black-key {
+      position: relative;
+      display: inline-block;
+      border: 1px solid #000;
+      text-align: center;
       cursor: pointer;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      font-weight: bold;
       user-select: none;
+      font-weight: bold;
     }
 
-    .key:active,
-    .key.active {
-      background: #ddd;
+    .white-key {
+      width: 60px;
+      height: 220px;
+      background: white;
+      z-index: 1;
     }
 
-    .label {
-      margin-bottom: 10px;
-      font-size: 14px;
+    .black-key {
+      width: 40px;
+      height: 140px;
+      background: black;
+      color: white;
+      position: absolute;
+      margin-left: -20px;
+      z-index: 2;
+    }
+
+    .white-key.active, .black-key.active {
+      background: #ccc !important;
+    }
+
+    .controls {
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 8px 20px;
+      margin: 0 10px;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
-  <h1>Piano with Keyboard and Mouse</h1>
-  <p>Use keys A–K or click the keys</p>
+  <h1>Two-Hand Piano (Mouse + Keyboard + Recorder)</h1>
+  <p>Use keys A–K and ;' for white keys, WETYUO for black keys</p>
 
-  <div class="piano" id="piano"></div>
+  <div class="piano-wrapper" id="piano"></div>
+
+  <div class="controls">
+    <button onclick="startRecording()">Start Recording</button>
+    <button onclick="stopRecording()">Stop</button>
+    <button onclick="replayRecording()">Replay</button>
+  </div>
 
   <script>
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const audioCtx = new AudioContext();
 
     const notes = [
-      { key: 'A', name: 'C', freq: 261.63 },
-      { key: 'S', name: 'D', freq: 293.66 },
-      { key: 'D', name: 'E', freq: 329.63 },
-      { key: 'F', name: 'F', freq: 349.23 },
-      { key: 'G', name: 'G', freq: 392.00 },
-      { key: 'H', name: 'A', freq: 440.00 },
-      { key: 'J', name: 'B', freq: 493.88 },
-      { key: 'K', name: 'C2', freq: 523.25 }
+      { key: 'A', name: 'C4', freq: 261.63, color: 'white' },
+      { key: 'W', name: 'C#4', freq: 277.18, color: 'black' },
+      { key: 'S', name: 'D4', freq: 293.66, color: 'white' },
+      { key: 'E', name: 'D#4', freq: 311.13, color: 'black' },
+      { key: 'D', name: 'E4', freq: 329.63, color: 'white' },
+      { key: 'F', name: 'F4', freq: 349.23, color: 'white' },
+      { key: 'T', name: 'F#4', freq: 369.99, color: 'black' },
+      { key: 'G', name: 'G4', freq: 392.00, color: 'white' },
+      { key: 'Y', name: 'G#4', freq: 415.30, color: 'black' },
+      { key: 'H', name: 'A4', freq: 440.00, color: 'white' },
+      { key: 'U', name: 'A#4', freq: 466.16, color: 'black' },
+      { key: 'J', name: 'B4', freq: 493.88, color: 'white' },
+      { key: 'K', name: 'C5', freq: 523.25, color: 'white' },
+      { key: 'O', name: 'C#5', freq: 554.37, color: 'black' },
+      { key: 'L', name: 'D5', freq: 587.33, color: 'white' },
+      { key: 'P', name: 'D#5', freq: 622.25, color: 'black' },
+      { key: ';', name: 'E5', freq: 659.25, color: 'white' },
+      { key: "'", name: 'F5', freq: 698.46, color: 'white' }
     ];
 
     const piano = document.getElementById('piano');
 
+    // Create keys
     notes.forEach(note => {
       const key = document.createElement('div');
-      key.className = 'key';
+      key.className = note.color + '-key';
       key.dataset.key = note.key;
       key.dataset.freq = note.freq;
-
-      const label = document.createElement('div');
-      label.className = 'label';
-      label.textContent = `${note.name}\n(${note.key})`;
-      key.appendChild(label);
-
+      key.textContent = note.key;
       key.addEventListener('mousedown', () => playNote(note.freq, key));
       piano.appendChild(key);
     });
 
-    function playNote(frequency, element = null) {
+    function playNote(freq, element = null) {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-
       osc.type = 'sine';
-      osc.frequency.value = frequency;
+      osc.frequency.value = freq;
 
       osc.connect(gain);
       gain.connect(audioCtx.destination);
@@ -99,16 +128,47 @@
         element.classList.add('active');
         setTimeout(() => element.classList.remove('active'), 150);
       }
+
+      if (isRecording) {
+        recordedNotes.push({
+          freq,
+          time: Date.now() - startTime
+        });
+      }
     }
 
+    // Keyboard support
     document.addEventListener('keydown', e => {
       const key = e.key.toUpperCase();
       const note = notes.find(n => n.key === key);
       if (note) {
-        const element = [...document.querySelectorAll('.key')].find(k => k.dataset.key === key);
-        playNote(note.freq, element);
+        const el = [...document.querySelectorAll(`[data-key="${key}"]`)][0];
+        playNote(note.freq, el);
       }
     });
+
+    // Recording
+    let isRecording = false;
+    let recordedNotes = [];
+    let startTime = 0;
+
+    function startRecording() {
+      recordedNotes = [];
+      isRecording = true;
+      startTime = Date.now();
+    }
+
+    function stopRecording() {
+      isRecording = false;
+    }
+
+    function replayRecording() {
+      if (recordedNotes.length === 0) return;
+
+      recordedNotes.forEach(note => {
+        setTimeout(() => playNote(note.freq), note.time);
+      });
+    }
   </script>
 </body>
 </html>
