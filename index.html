@@ -2,103 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Keyboard Piano with Auto Recording</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      background: #f5f5f5;
-      padding: 20px;
-    }
-
-    #output {
-      border: 1px dashed #aaa;
-      padding: 10px;
-      min-height: 60px;
-      width: 80%;
-      margin: 20px auto;
-      font-size: 18px;
-      background: white;
-    }
-
-    .note {
-      display: inline-block;
-      padding: 4px 6px;
-      margin: 2px;
-      background: #eee;
-      border-radius: 4px;
-      font-family: monospace;
-    }
-
-    .note.black {
-      background: #444;
-      color: white;
-    }
-
-    .note.playing {
-      background: yellow;
-    }
-  </style>
+  <title>Modular Piano</title>
+  <link rel="stylesheet" href="css/mini.css" id="style-link">
 </head>
 <body>
-  <h1>Keyboard Piano (Live Recording)</h1>
-  <p>Play with your keyboard — notes appear below!</p>
+  <h1>🎹 Modular Piano</h1>
 
-  <div id="output" contenteditable="true"></div>
+  <div>
+    <label>Keyboard Style:
+      <select onchange="switchStyle(this.value)">
+        <option value="mini">Mini</option>
+        <option value="classic">Classic</option>
+      </select>
+    </label>
 
-  <script>
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const audioCtx = new AudioContext();
+    <label>Keymap:
+      <select onchange="switchKeymap(this.value)">
+        <option value="mini">Mini Layout</option>
+        <option value="twohand">Two-Hand Layout</option>
+      </select>
+    </label>
+  </div>
 
-    const keyToNote = {
-      'A': { name: 'C4', freq: 261.63, color: 'white' },
-      'W': { name: 'C#4', freq: 277.18, color: 'black' },
-      'S': { name: 'D4', freq: 293.66, color: 'white' },
-      'E': { name: 'D#4', freq: 311.13, color: 'black' },
-      'D': { name: 'E4', freq: 329.63, color: 'white' },
-      'F': { name: 'F4', freq: 349.23, color: 'white' },
-      'T': { name: 'F#4', freq: 369.99, color: 'black' },
-      'G': { name: 'G4', freq: 392.00, color: 'white' },
-      'Y': { name: 'G#4', freq: 415.30, color: 'black' },
-      'H': { name: 'A4', freq: 440.00, color: 'white' },
-      'U': { name: 'A#4', freq: 466.16, color: 'black' },
-      'J': { name: 'B4', freq: 493.88, color: 'white' },
-      'K': { name: 'C5', freq: 523.25, color: 'white' },
-      'O': { name: 'C#5', freq: 554.37, color: 'black' },
-      'L': { name: 'D5', freq: 587.33, color: 'white' },
-      'P': { name: 'D#5', freq: 622.25, color: 'black' },
-      ';': { name: 'E5', freq: 659.25, color: 'white' },
-      "'": { name: 'F5', freq: 698.46, color: 'white' }
-    };
+  <div id="piano-output" contenteditable="true"></div>
 
-    function playNote(freq) {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      gain.gain.setValueAtTime(1, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + 1);
-    }
-
-    document.addEventListener('keydown', e => {
-      const key = e.key.toUpperCase();
-      if (keyToNote[key]) {
-        const { name, freq, color } = keyToNote[key];
-        playNote(freq);
-
-        const el = document.createElement('span');
-        el.className = `note ${color}`;
-        el.textContent = name;
-        document.getElementById('output').appendChild(el);
-      }
-    });
-  </script>
+  <!-- Default keymap -->
+  <script src="js/keymap_mini.js" id="keymap-script"></script>
+  <script src="js/piano.js"></script>
 </body>
 </html>
