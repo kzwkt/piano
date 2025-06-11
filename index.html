@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Piano: Keyboard + Mouse</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      background: #f5f5f5;
+    }
+
+    .piano {
+      display: flex;
+      justify-content: center;
+      margin-top: 50px;
+    }
+
+    .key {
+      width: 60px;
+      height: 200px;
+      margin: 2px;
+      background: white;
+      border: 2px solid black;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      font-weight: bold;
+      user-select: none;
+    }
+
+    .key:active,
+    .key.active {
+      background: #ddd;
+    }
+
+    .label {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Piano with Keyboard and Mouse</h1>
+  <p>Use keys A–K or click the keys</p>
+
+  <div class="piano" id="piano"></div>
+
+  <script>
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+
+    const notes = [
+      { key: 'A', name: 'C', freq: 261.63 },
+      { key: 'S', name: 'D', freq: 293.66 },
+      { key: 'D', name: 'E', freq: 329.63 },
+      { key: 'F', name: 'F', freq: 349.23 },
+      { key: 'G', name: 'G', freq: 392.00 },
+      { key: 'H', name: 'A', freq: 440.00 },
+      { key: 'J', name: 'B', freq: 493.88 },
+      { key: 'K', name: 'C2', freq: 523.25 }
+    ];
+
+    const piano = document.getElementById('piano');
+
+    notes.forEach(note => {
+      const key = document.createElement('div');
+      key.className = 'key';
+      key.dataset.key = note.key;
+      key.dataset.freq = note.freq;
+
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = `${note.name}\n(${note.key})`;
+      key.appendChild(label);
+
+      key.addEventListener('mousedown', () => playNote(note.freq, key));
+      piano.appendChild(key);
+    });
+
+    function playNote(frequency, element = null) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.value = frequency;
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      gain.gain.setValueAtTime(1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 1);
+
+      if (element) {
+        element.classList.add('active');
+        setTimeout(() => element.classList.remove('active'), 150);
+      }
+    }
+
+    document.addEventListener('keydown', e => {
+      const key = e.key.toUpperCase();
+      const note = notes.find(n => n.key === key);
+      if (note) {
+        const element = [...document.querySelectorAll('.key')].find(k => k.dataset.key === key);
+        playNote(note.freq, element);
+      }
+    });
+  </script>
+</body>
+</html>
