@@ -11,35 +11,40 @@ body {
   height: 150px;
   margin: 20px auto;
   width: fit-content;
+  display: flex;
 }
 
 .note {
-  display: inline-block;
   text-align: center;
-  line-height: 140px;
-  font-size: 14px;
+  font-size: 12px;
   border: 1px solid #444;
   cursor: pointer;
   user-select: none;
+  position: relative;
+  box-sizing: border-box;
 }
 
+/* White keys aligned horizontally */
 .note.white {
   width: 40px;
   height: 150px;
   background: white;
   color: black;
-  position: relative;
   z-index: 1;
+  margin: 0;
 }
 
+/* Black keys overlap and center over white keys */
 .note.black {
-  width: 30px;
+  width: 28px;
   height: 90px;
   background: black;
   color: white;
   position: absolute;
-  top: 0;
   z-index: 2;
+  top: 0;
+  margin-left: -14px;
+  margin-right: -14px;
 }
 
 #piano-output {
