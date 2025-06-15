@@ -8,53 +8,45 @@ body {
 
 #piano-container {
   position: relative;
-  margin: 30px auto;
+  height: 150px;
+  margin: 20px auto;
   width: fit-content;
-  display: flex;
-  height: 200px;
 }
 
 .note {
-  user-select: none;
-  border: 1px solid #333;
-  box-sizing: border-box;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  display: inline-block;
+  text-align: center;
+  line-height: 140px;
   font-size: 14px;
+  border: 1px solid #444;
   cursor: pointer;
-  transition: background 0.2s;
+  user-select: none;
 }
 
-/* White keys */
 .note.white {
+  width: 40px;
+  height: 150px;
   background: white;
   color: black;
-  width: 40px;
-  height: 200px;
+  position: relative;
   z-index: 1;
 }
 
-/* Black keys */
 .note.black {
+  width: 30px;
+  height: 90px;
   background: black;
   color: white;
-  width: 28px;
-  height: 120px;
   position: absolute;
+  top: 0;
   z-index: 2;
-  margin-left: -14px; /* half the width to center between white keys */
 }
 
-/* Hover/active effects */
-.note:hover {
-  background-color: #ddd;
-}
-
-.note.black:hover {
-  background-color: #444;
-}
-
-.note:active {
-  transform: scale(0.98);
+#piano-output {
+  background: #111;
+  min-height: 60px;
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #555;
+  width: 80%;
 }
